@@ -17,6 +17,11 @@ Auto-translate your entire Laravel application — **lang/ files** (PHP + JSON) 
 composer require laratoolkit/voyager-translator
 ```
 
+> **PHP 8.5+ veya bağımlılık çakışması alırsanız:**
+> ```bash
+> composer require laratoolkit/voyager-translator --ignore-platform-reqs
+> ```
+
 Publish the config (optional):
 
 ```bash
