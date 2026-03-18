@@ -15,6 +15,7 @@ return [
     |--------------------------------------------------------------------------
     | Gemini API Key
     |--------------------------------------------------------------------------
+    | Get yours at https://aistudio.google.com/app/apikey
     */
     'gemini_api_key' => env('GEMINI_API_KEY'),
 
@@ -29,15 +30,13 @@ return [
     |--------------------------------------------------------------------------
     | Default Source Locale
     |--------------------------------------------------------------------------
-    | The locale your original content is written in.
     */
     'source_locale' => env('VOYAGER_TRANSLATOR_SOURCE', 'tr'),
 
     /*
     |--------------------------------------------------------------------------
-    | Default Target Locales
+    | Default Target Locales (Artisan command)
     |--------------------------------------------------------------------------
-    | Comma-separated list of locales to translate into.
     */
     'target_locales' => env('VOYAGER_TRANSLATOR_TARGETS', 'en,es,ru,ar'),
 
@@ -45,13 +44,30 @@ return [
     |--------------------------------------------------------------------------
     | Batch Size
     |--------------------------------------------------------------------------
-    | Number of items sent per Gemini bulk request or GTX parallel batch.
+    | Items per Gemini bulk request or GTX parallel batch.
     */
     'batch_size' => 40,
 
     /*
     |--------------------------------------------------------------------------
-    | System Tables to Skip
+    | Web UI Route Prefix
+    |--------------------------------------------------------------------------
+    | The URL prefix for the web interface. Access at /{route_prefix}
+    | Default: /voyager-translator
+    */
+    'route_prefix' => env('VOYAGER_TRANSLATOR_PREFIX', 'voyager-translator'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Web UI Middleware
+    |--------------------------------------------------------------------------
+    | Add 'auth' or your Voyager admin middleware here.
+    */
+    'middleware' => ['web'],
+
+    /*
+    |--------------------------------------------------------------------------
+    | System Tables to Skip (SQL parsing)
     |--------------------------------------------------------------------------
     */
     'skip_tables' => [
