@@ -36,12 +36,27 @@ class TranslatorController extends Controller
 
     public function loadFromDb(): JsonResponse
     {
+        // Check if translations table exists
+        try {
+            $hasTable = DB::getSchemaBuilder()->hasTable('translations');
+        } catch (\Exception) {
+            $hasTable = false;
+        }
+
+        if (!$hasTable) {
+            return response()->json([
+                'success'    => false,
+                'no_voyager' => true,
+                'error'      => 'The "translations" table does not exist. This tab requires Laravel Voyager. Use the Lang Files tab to translate your lang/ directory instead.',
+            ], 422);
+        }
+
         try {
             $rows = DB::table('translations')
                 ->select('table_name', 'column_name', 'foreign_key', 'locale', 'value')
                 ->get();
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'error' => 'Cannot read translations table: ' . $e->getMessage()], 500);
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
 
         $groups = [];
@@ -86,6 +101,33 @@ class TranslatorController extends Controller
         $modelLang    = $parser->detectModelLanguage($modelData);
         $localeCounts = $parser->getLocaleCounts($rawGroups);
         $detectedLang = !empty($localeCounts) ? (string) array_key_first($localeCounts) : $modelLang;
+
+        // No Voyager translations found — fall back to model table content
+        if (empty($rawGroups) && !empty($modelData)) {
+            $groups       = $this->buildGroupsFromModelData($modelData, $modelLang);
+            $localeCounts = [$modelLang => count($groups)];
+            $detectedLang = $modelLang;
+
+            $id = Str::random(20);
+            Cache::put("vt_{$id}_groups", $groups, self::CACHE_TTL);
+
+            return response()->json([
+                'success'       => true,
+                'id'            => $id,
+                'total'         => count($groups),
+                'locale_stats'  => $localeCounts,
+                'detected_lang' => $detectedLang,
+                'source'        => 'model_tables',
+                'notice'        => 'No Voyager translations table found. Content extracted from model tables (' . count($groups) . ' rows).',
+            ]);
+        }
+
+        if (empty($rawGroups)) {
+            return response()->json([
+                'success' => false,
+                'error'   => 'No translatable content found in this SQL file. Make sure it contains a "translations" table (Voyager) or model data. For lang/ files, use the Lang Files tab.',
+            ], 422);
+        }
 
         $groups = array_values($rawGroups);
         $id     = Str::random(20);
@@ -530,6 +572,29 @@ class TranslatorController extends Controller
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
+
+    /**
+     * Build translation groups from raw model table data.
+     * Model data keys: "tableName:id:column" → value
+     */
+    private function buildGroupsFromModelData(array $modelData, string $sourceLang): array
+    {
+        $groups = [];
+        foreach ($modelData as $key => $value) {
+            $parts = explode(':', $key, 3);
+            if (count($parts) !== 3) continue;
+            [$table, $id, $column] = $parts;
+
+            $groupKey = "{$table}:{$column}:{$id}";
+            $groups[$groupKey] = [
+                'table_name'  => $table,
+                'column_name' => $column,
+                'foreign_key' => $id,
+                'locales'     => [$sourceLang => (string) $value],
+            ];
+        }
+        return array_values($groups);
+    }
 
     private function countLocales(array $groups): array
     {

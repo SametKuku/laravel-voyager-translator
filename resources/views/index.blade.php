@@ -398,8 +398,21 @@
                 </div>
             </template>
 
+            <template x-if="voy.notice">
+                <div class="mt-4 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-xl px-4 py-3 fade-in" x-text="voy.notice"></div>
+            </template>
+
             <template x-if="voy.error">
-                <div class="mt-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 fade-in" x-text="voy.error"></div>
+                <div class="mt-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 fade-in">
+                    <p x-text="voy.error"></p>
+                    <template x-if="voy.error.includes('translations') || voy.error.includes('Voyager')">
+                        <p class="mt-2 font-medium">
+                            👉 Your project doesn't use Voyager. Switch to the
+                            <button @click="switchMode('lang')" class="underline text-indigo-700 hover:text-indigo-900">Lang Files tab</button>
+                            to translate your <code>lang/</code> directory.
+                        </p>
+                    </template>
+                </div>
             </template>
         </div>
     </div>
@@ -593,7 +606,7 @@ function app() {
             detectedLang: 'en', sourceLang: 'en', targets: [],
             translating: false, progress: {}, completedLocales: [],
             status: '', txError: '',
-            saving: false, savedCount: 0, error: '',
+            saving: false, savedCount: 0, error: '', notice: '',
         },
 
         switchMode(m) {
@@ -734,6 +747,10 @@ function app() {
             this.voy.error      = '';
             try {
                 const r = await this.post(window.VTR.loadDb, {});
+                if (r.no_voyager) {
+                    this.voy.error = '⚠️ ' + r.error;
+                    return;
+                }
                 this._applyVoyResult(r);
             } catch(e) {
                 this.voy.error = 'Error: ' + e.message;
@@ -746,11 +763,18 @@ function app() {
             this.voy.loading    = true;
             this.voy.dataSource = 'sql';
             this.voy.error      = '';
+            this.voy.notice     = '';
             try {
                 const fd = new FormData();
                 fd.append('file', file);
                 fd.append('_token', document.querySelector('meta[name=csrf-token]').content);
-                const r = await (await fetch(window.VTR.uploadSql, { method:'POST', body:fd })).json();
+                const resp = await fetch(window.VTR.uploadSql, { method:'POST', body:fd });
+                const r = await resp.json();
+                if (!resp.ok) {
+                    this.voy.error = r.error || 'Upload failed';
+                    return;
+                }
+                if (r.notice) this.voy.notice = r.notice;
                 this._applyVoyResult(r);
             } catch(e) {
                 this.voy.error = 'Upload error: ' + e.message;
