@@ -1,6 +1,6 @@
 <?php
 
-namespace SametKuku\VoyagerTranslator\Http\Controllers;
+namespace SametKuku\LaravelTranslator\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -8,13 +8,13 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use SametKuku\VoyagerTranslator\Helpers\HtmlProtector;
-use SametKuku\VoyagerTranslator\Helpers\SlugHelper;
-use SametKuku\VoyagerTranslator\Helpers\SqlParser;
-use SametKuku\VoyagerTranslator\Services\GeminiTranslator;
-use SametKuku\VoyagerTranslator\Services\GoogleTranslator;
-use SametKuku\VoyagerTranslator\Services\LangFileScanner;
-use SametKuku\VoyagerTranslator\Services\LangFileWriter;
+use SametKuku\LaravelTranslator\Helpers\HtmlProtector;
+use SametKuku\LaravelTranslator\Helpers\SlugHelper;
+use SametKuku\LaravelTranslator\Helpers\SqlParser;
+use SametKuku\LaravelTranslator\Services\GeminiTranslator;
+use SametKuku\LaravelTranslator\Services\GoogleTranslator;
+use SametKuku\LaravelTranslator\Services\LangFileScanner;
+use SametKuku\LaravelTranslator\Services\LangFileWriter;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TranslatorController extends Controller
@@ -27,7 +27,7 @@ class TranslatorController extends Controller
 
     public function index(): \Illuminate\View\View
     {
-        return view('voyager-translator::index');
+        return view('laravel-translator::index');
     }
 
     // -------------------------------------------------------------------------
@@ -165,8 +165,8 @@ class TranslatorController extends Controller
         $locale     = $v['locale'];
         $batchIndex = (int) $v['batch_index'];
         $batchSize  = (int) $v['batch_size'];
-        $engine     = $v['engine'] ?? config('voyager-translator.engine', 'gtx');
-        $geminiKey  = $v['gemini_key'] ?? config('voyager-translator.gemini_api_key');
+        $engine     = $v['engine'] ?? config('laravel-translator.engine', 'gtx');
+        $geminiKey  = $v['gemini_key'] ?? config('laravel-translator.gemini_api_key');
 
         $groups = Cache::get("vt_{$id}_groups");
         if (!$groups) {
@@ -437,8 +437,8 @@ class TranslatorController extends Controller
         $locale     = $v['locale'];
         $batchIndex = (int) $v['batch_index'];
         $batchSize  = (int) $v['batch_size'];
-        $engine     = $v['engine'] ?? config('voyager-translator.engine', 'gtx');
-        $geminiKey  = $v['gemini_key'] ?? config('voyager-translator.gemini_api_key');
+        $engine     = $v['engine'] ?? config('laravel-translator.engine', 'gtx');
+        $geminiKey  = $v['gemini_key'] ?? config('laravel-translator.gemini_api_key');
 
         $strings = Cache::get("vt_{$id}_lang_strings");
         if (!$strings) {
@@ -627,12 +627,12 @@ class TranslatorController extends Controller
     private function buildTranslator(string $engine, ?string $geminiKey): GeminiTranslator|GoogleTranslator|null
     {
         if ($engine === 'gemini') {
-            $key = $geminiKey ?: config('voyager-translator.gemini_api_key');
+            $key = $geminiKey ?: config('laravel-translator.gemini_api_key');
             if (empty($key)) return null;
             return new GeminiTranslator(
                 $key,
-                config('voyager-translator.gemini_model', 'gemini-2.5-flash'),
-                (int) config('voyager-translator.batch_size', 40)
+                config('laravel-translator.gemini_model', 'gemini-2.5-flash'),
+                (int) config('laravel-translator.batch_size', 40)
             );
         }
         return new GoogleTranslator();

@@ -19,13 +19,13 @@
     },
     "autoload": {
         "psr-4": {
-            "SametKuku\\VoyagerTranslator\\": "src/"
+            "SametKuku\\LaravelTranslator\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "SametKuku\\VoyagerTranslator\\VoyagerTranslatorServiceProvider"
+                "SametKuku\\LaravelTranslator\\LaravelTranslatorServiceProvider"
             ]
         }
     },

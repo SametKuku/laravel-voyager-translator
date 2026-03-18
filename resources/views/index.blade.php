@@ -14,17 +14,17 @@
     </style>
     <script>
         window.VTR = {
-            scanLang:           "{{ route('voyager-translator.lang-scan') }}",
-            loadLang:           "{{ route('voyager-translator.lang-load') }}",
-            translateLangBatch: "{{ route('voyager-translator.lang-translate-batch') }}",
-            writeLang:          "{{ route('voyager-translator.lang-write') }}",
-            exportLangZip:      "{{ route('voyager-translator.lang-export') }}",
-            loadDb:             "{{ route('voyager-translator.load-db') }}",
-            uploadSql:          "{{ route('voyager-translator.upload-sql') }}",
-            translateBatch:     "{{ route('voyager-translator.translate-batch') }}",
-            save:               "{{ route('voyager-translator.save') }}",
-            exportSql:          "{{ route('voyager-translator.export-sql') }}",
-            exportJson:         "{{ route('voyager-translator.export-json') }}",
+            scanLang:           "{{ route('laravel-translator.lang-scan') }}",
+            loadLang:           "{{ route('laravel-translator.lang-load') }}",
+            translateLangBatch: "{{ route('laravel-translator.lang-translate-batch') }}",
+            writeLang:          "{{ route('laravel-translator.lang-write') }}",
+            exportLangZip:      "{{ route('laravel-translator.lang-export') }}",
+            loadDb:             "{{ route('laravel-translator.load-db') }}",
+            uploadSql:          "{{ route('laravel-translator.upload-sql') }}",
+            translateBatch:     "{{ route('laravel-translator.translate-batch') }}",
+            save:               "{{ route('laravel-translator.save') }}",
+            exportSql:          "{{ route('laravel-translator.export-sql') }}",
+            exportJson:         "{{ route('laravel-translator.export-json') }}",
         };
     </script>
 </head>

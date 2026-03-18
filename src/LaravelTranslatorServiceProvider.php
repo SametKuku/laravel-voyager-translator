@@ -1,22 +1,22 @@
 <?php
 
-namespace SametKuku\VoyagerTranslator;
+namespace SametKuku\LaravelTranslator;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use SametKuku\VoyagerTranslator\Commands\TranslateCommand;
-use SametKuku\VoyagerTranslator\Http\Controllers\TranslatorController;
+use SametKuku\LaravelTranslator\Commands\TranslateCommand;
+use SametKuku\LaravelTranslator\Http\Controllers\TranslatorController;
 
-class VoyagerTranslatorServiceProvider extends ServiceProvider
+class LaravelTranslatorServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/voyager-translator.php', 'voyager-translator');
+        $this->mergeConfigFrom(__DIR__ . '/../config/laravel-translator.php', 'laravel-translator');
     }
 
     public function boot(): void
     {
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'voyager-translator');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-translator');
 
         $this->registerRoutes();
 
@@ -24,23 +24,23 @@ class VoyagerTranslatorServiceProvider extends ServiceProvider
             $this->commands([TranslateCommand::class]);
 
             $this->publishes([
-                __DIR__ . '/../config/voyager-translator.php' => config_path('voyager-translator.php'),
-            ], 'voyager-translator-config');
+                __DIR__ . '/../config/laravel-translator.php' => config_path('laravel-translator.php'),
+            ], 'laravel-translator-config');
 
             $this->publishes([
-                __DIR__ . '/../resources/views' => resource_path('views/vendor/voyager-translator'),
-            ], 'voyager-translator-views');
+                __DIR__ . '/../resources/views' => resource_path('views/vendor/laravel-translator'),
+            ], 'laravel-translator-views');
         }
     }
 
     private function registerRoutes(): void
     {
-        $prefix     = config('voyager-translator.route_prefix', 'voyager-translator');
-        $middleware = config('voyager-translator.middleware', ['web']);
+        $prefix     = config('laravel-translator.route_prefix', 'laravel-translator');
+        $middleware = config('laravel-translator.middleware', ['web']);
 
         Route::prefix($prefix)
             ->middleware($middleware)
-            ->name('voyager-translator.')
+            ->name('laravel-translator.')
             ->group(function () {
                 // UI
                 Route::get('/', [TranslatorController::class, 'index'])->name('index');

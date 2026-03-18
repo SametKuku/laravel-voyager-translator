@@ -1,6 +1,6 @@
 <?php
 
-namespace SametKuku\VoyagerTranslator\Services;
+namespace SametKuku\LaravelTranslator\Services;
 
 use Illuminate\Support\Facades\Http;
 

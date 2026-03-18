@@ -1,15 +1,15 @@
 <?php
 
-namespace SametKuku\VoyagerTranslator\Commands;
+namespace SametKuku\LaravelTranslator\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use SametKuku\VoyagerTranslator\Helpers\HtmlProtector;
-use SametKuku\VoyagerTranslator\Helpers\SlugHelper;
-use SametKuku\VoyagerTranslator\Services\GeminiTranslator;
-use SametKuku\VoyagerTranslator\Services\GoogleTranslator;
-use SametKuku\VoyagerTranslator\Services\LangFileScanner;
-use SametKuku\VoyagerTranslator\Services\LangFileWriter;
+use SametKuku\LaravelTranslator\Helpers\HtmlProtector;
+use SametKuku\LaravelTranslator\Helpers\SlugHelper;
+use SametKuku\LaravelTranslator\Services\GeminiTranslator;
+use SametKuku\LaravelTranslator\Services\GoogleTranslator;
+use SametKuku\LaravelTranslator\Services\LangFileScanner;
+use SametKuku\LaravelTranslator\Services\LangFileWriter;
 
 class TranslateCommand extends Command
 {
@@ -28,9 +28,9 @@ class TranslateCommand extends Command
     public function handle(): int
     {
         $mode        = $this->option('mode') ?? 'files';
-        $engine      = $this->option('engine') ?? config('voyager-translator.engine', 'gtx');
-        $sourceLang  = $this->option('from')   ?? config('voyager-translator.source_locale', 'en');
-        $targetInput = $this->option('to')     ?? config('voyager-translator.target_locales', 'tr,es,ru,ar');
+        $engine      = $this->option('engine') ?? config('laravel-translator.engine', 'gtx');
+        $sourceLang  = $this->option('from')   ?? config('laravel-translator.source_locale', 'en');
+        $targetInput = $this->option('to')     ?? config('laravel-translator.target_locales', 'tr,es,ru,ar');
         $targetLangs = array_values(array_filter(array_map('trim', explode(',', $targetInput))));
         $dryRun      = $this->option('dry-run');
 
@@ -72,7 +72,7 @@ class TranslateCommand extends Command
         $translator = $this->buildTranslator($engine);
         if (!$translator) return self::FAILURE;
 
-        $batchSize = (int) config('voyager-translator.batch_size', 60);
+        $batchSize = (int) config('laravel-translator.batch_size', 60);
         $onlyMissing = $this->option('only-missing');
 
         foreach ($targetLangs as $locale) {
@@ -161,7 +161,7 @@ class TranslateCommand extends Command
             return self::SUCCESS;
         }
 
-        $batchSize = (int) config('voyager-translator.batch_size', 40);
+        $batchSize = (int) config('laravel-translator.batch_size', 40);
 
         foreach ($targetLangs as $locale) {
             $this->newLine();
@@ -256,12 +256,12 @@ class TranslateCommand extends Command
     private function buildTranslator(string $engine): GeminiTranslator|GoogleTranslator|null
     {
         if ($engine === 'gemini') {
-            $key = config('voyager-translator.gemini_api_key');
+            $key = config('laravel-translator.gemini_api_key');
             if (empty($key)) {
                 $this->error("GEMINI_API_KEY is not set in .env");
                 return null;
             }
-            return new GeminiTranslator($key, config('voyager-translator.gemini_model', 'gemini-2.5-flash'), (int) config('voyager-translator.batch_size', 40));
+            return new GeminiTranslator($key, config('laravel-translator.gemini_model', 'gemini-2.5-flash'), (int) config('laravel-translator.batch_size', 40));
         }
         return new GoogleTranslator();
     }

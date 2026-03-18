@@ -1,6 +1,6 @@
 <?php
 
-namespace SametKuku\VoyagerTranslator\Helpers;
+namespace SametKuku\LaravelTranslator\Helpers;
 
 class SqlParser
 {

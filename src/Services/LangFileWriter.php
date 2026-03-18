@@ -1,6 +1,6 @@
 <?php
 
-namespace SametKuku\VoyagerTranslator\Services;
+namespace SametKuku\LaravelTranslator\Services;
 
 class LangFileWriter
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace SametKuku\VoyagerTranslator\Services;
+namespace SametKuku\LaravelTranslator\Services;
 
 use Illuminate\Support\Facades\Http;
-use SametKuku\VoyagerTranslator\Helpers\HtmlProtector;
+use SametKuku\LaravelTranslator\Helpers\HtmlProtector;
 
 class GoogleTranslator
 {
